@@ -1,0 +1,20 @@
+This is the quick version of how to compile and install the x10 drivers.
+
+Step 1: Build the daemons, utilities, and device modules.  You can do 
+	this as a user or as root by typing "make" in the source directory.
+
+Step 2: Install the daemons, utilities, and device modules as root by 
+	typing "make install"
+
+-----------------------------------------------------------------------------
+To load the kernel module:
+
+type "modprobe x10"
+
+-----------------------------------------------------------------------------
+To run the userspace drivers:
+
+load the driver that is associated with your device.
+
+-----------------------------------------------------------------------------
+Follow the directions in the file html/index.html to test the drivers.
