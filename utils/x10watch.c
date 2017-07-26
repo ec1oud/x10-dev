@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 	
 	fd = open(device,O_RDONLY);
 	if (fd < 0){
-		fprintf(stderr,"%s: error opening %d (%s)\n",progname,device,strerror(errno));
+		fprintf(stderr,"%s: error opening %s (%s)\n",progname,device,strerror(errno));
 		exit(fd);
 	}
 	watch();
