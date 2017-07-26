@@ -119,12 +119,14 @@ static int delay=1;
 
 static __inline__ int XMAJOR (struct file *a)
 {
-  return MAJOR ((a)->f_dentry->d_inode->i_rdev);
+    return MAJOR ((a)->f_path.dentry->d_inode->i_rdev);
+//  return MAJOR ((a)->f_dentry->d_inode->i_rdev);
 }
 
 static __inline__ int XMINOR (struct file *a)
 {
-  return MINOR ((a)->f_dentry->d_inode->i_rdev);
+    return MINOR ((a)->f_path.dentry->d_inode->i_rdev);
+//  return MINOR ((a)->f_dentry->d_inode->i_rdev);
 }
 
 /* prototypes for character device registration */
@@ -536,6 +538,8 @@ static int log_get(loff_t *offset,unsigned char *ubuffer,int len)
    of zero to have the system allocate major device numbers.  If this is done, 
    the user must look in /proc/devices to find the device numbers.
 */
+
+/* nevermind about /proc for now
 char *procdirname="bus/x10";
 char *procinfoname="info";
 static struct proc_dir_entry *procdir,*procinfo;
@@ -548,23 +552,24 @@ static int proc_read_info(char *page,char **start,off_t off,int counter,int *eof
 //  MOD_DEC_USE_COUNT;
   return len;
 }
+*/
 
 int __init
 x10_init (void)
 {
   int res,returnvalue = 0;
 
-  procdir=proc_mkdir(procdirname,NULL);
-  if (procdir == NULL) {
-    returnvalue = -ENOMEM;
-    goto error_dir;
-  }
-  procinfo=create_proc_read_entry(procinfoname,S_IRUSR|S_IRGRP|S_IROTH,procdir,proc_read_info,NULL);
-  if (procinfo == NULL) {
-    returnvalue = -ENOMEM;
-    goto error_info;
-  }
-  //procinfo->owner = THIS_MODULE;
+//  procdir=proc_mkdir(procdirname,NULL);
+//  if (procdir == NULL) {
+//    returnvalue = -ENOMEM;
+//    goto error_dir;
+//  }
+//  procinfo=create_proc_read_entry(procinfoname,S_IRUSR|S_IRGRP|S_IROTH,procdir,proc_read_info,NULL);
+//  if (procinfo == NULL) {
+//    returnvalue = -ENOMEM;
+//    goto error_info;
+//  }
+//  procinfo->owner = THIS_MODULE;
 
   memset(&x10api,0,sizeof(x10api_t));
   x10api.data = -1;
@@ -609,9 +614,9 @@ x10_init (void)
   dbg ("%s", "X10 /dev devices registered");
   info ("X10 driver successfully loaded");
   return 0;
-error_info:
-  remove_proc_entry(procdirname,NULL);
-error_dir:
+//error_info:
+//  remove_proc_entry(procdirname,NULL);
+//error_dir:
   return returnvalue;
 }
 
@@ -622,18 +627,14 @@ x10_exit (void)
 
   if (x10api.data >= 0) {
     dbg ("unregistering %d:%s", x10api.data, DATA_DEVICE_NAME);
-    //if (unregister_chrdev (x10api.data, DATA_DEVICE_NAME) == -EINVAL)
-      //dbg ("error unregistering %s", DATA_DEVICE_NAME);
-      unregister_chrdev (x10api.data, DATA_DEVICE_NAME);
+    unregister_chrdev (x10api.data, DATA_DEVICE_NAME);
   }
   if (x10api.control >= 0) {
     dbg ("unregistering %d:%s", x10api.control, CONTROL_DEVICE_NAME);
-    //if (unregister_chrdev (x10api.control, CONTROL_DEVICE_NAME) == -EINVAL)
-      //dbg ("error unregistering %s", CONTROL_DEVICE_NAME);
-      unregister_chrdev (x10api.control, CONTROL_DEVICE_NAME);
-    }
-  remove_proc_entry(procinfoname,procdir);
-  remove_proc_entry(procdirname,NULL);
+    unregister_chrdev (x10api.control, CONTROL_DEVICE_NAME);
+  }
+//  remove_proc_entry(procinfoname,procdir);
+//  remove_proc_entry(procdirname,NULL);
   info ("X10 driver unloaded");
 }
 
